@@ -1,6 +1,8 @@
 import * as React from 'react'
 import { Link } from 'gatsby'
+
 import * as handTrack from 'handtrackjs';
+import * as faceapi from 'face-api.js';
 
 import Page from '../components/Page'
 import Container from '../components/Container'
@@ -9,6 +11,7 @@ import IndexLayout from '../layouts'
 class IndexPage extends React.Component {
   constructor(props: any) {
     super(props);
+    console.log(faceapi.nets);
     handTrack.load().then(model => {
       // detect objects in the image.
       console.log("model loaded");
