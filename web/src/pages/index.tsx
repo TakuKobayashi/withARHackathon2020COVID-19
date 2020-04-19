@@ -12,6 +12,7 @@ import IndexLayout from '../layouts'
 class IndexPage extends React.Component {
   private webcam: Webcam;
   private handTrackModel: handTrack.ObjectDetection | null = null;
+  private isFaceTrackModelLoaded: boolean = false;
   private cameraVideo: HTMLVideoElement | null;
   private canvas: HTMLCanvasElement;
   private context: any;
@@ -20,9 +21,14 @@ class IndexPage extends React.Component {
   constructor(props: any) {
     super(props);
     console.log(faceapi.nets);
-    handTrack.load().then(model => {
-      console.log(model);
-      this.handTrackModel = model;
+    faceapi.nets.ssdMobilenetv1.loadFromUri('https://justadudewhohacks.github.io/face-api.js/models').then(() => {
+      console.log("faceLoaded");
+      this.isFaceTrackModelLoaded = true;
+      this.runDetection();
+    });
+    handTrack.load().then(handModel => {
+      console.log(handModel);
+      this.handTrackModel = handModel;
       this.runDetection();
     });
     this.runDetection = this.runDetection.bind(this);
@@ -32,7 +38,6 @@ class IndexPage extends React.Component {
     //console.log(this.webcam.video);
     //console.log(faceapi.createCanvasFromMedia(this.webcam.video));
   }
-  
 
   onCanvasLoaded = (canvasRef: HTMLCanvasElement) => {
     console.log(canvasRef);
@@ -57,15 +62,23 @@ class IndexPage extends React.Component {
   }
 
   runDetection() {
-    if(!this.handTrackModel || !this.cameraVideo){
+    if(!this.cameraVideo){
       return;
     }
-    this.handTrackModel.detect(this.cameraVideo).then(predictions => {
-      this.isStartTracking = true;
+    if(this.handTrackModel){
+      this.handTrackModel.detect(this.cameraVideo).then(predictions => {
+        this.isStartTracking = true;
         console.log("Predictions: ", predictions);
-        this.handTrackModel.renderPredictions(predictions, this.canvas, this.context, this.cameraVideo);
+        //this.handTrackModel.renderPredictions(predictions, this.canvas, this.context, this.cameraVideo);
         window.requestAnimationFrame(this.runDetection);
-    });
+      });
+    }
+    if(this.isFaceTrackModelLoaded){
+      faceapi.detectSingleFace(this.cameraVideo).then(faces => {
+        console.log("faces: ", faces);
+        window.requestAnimationFrame(this.runDetection);
+      });
+    }
   }
 
   render():
