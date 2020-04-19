@@ -34,6 +34,8 @@ class IndexPage extends React.Component {
       this.handTrackModel = handModel
       this.runDetection()
     })
+    this.onCanvasLoaded = this.onCanvasLoaded.bind(this)
+    this.onVideoRef = this.onVideoRef.bind(this)
     this.runDetection = this.runDetection.bind(this)
   }
 
@@ -89,9 +91,6 @@ class IndexPage extends React.Component {
       <IndexLayout>
         <Page>
           <Container>
-            <h1>Hi people</h1>
-            <p>Welcome to your new Gatsby site.</p>
-            <p>Now go build something great.</p>
             <video ref={this.onVideoRef} />
             <canvas ref={this.onCanvasLoaded} />
           </Container>
