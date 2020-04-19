@@ -49,7 +49,8 @@ class IndexPage extends React.Component<CameraProps> {
       isVideo: false,
       isShowMessage: false
     }
-    faceapi.loadTinyFaceDetectorModel('https://justadudewhohacks.github.io/face-api.js/models').then(() => {
+    faceapi.env.monkeyPatch({ fetch: fetch })
+    faceapi.loadTinyFaceDetectorModel('https://justadudewhohacks.github.io/face-api.js/models/').then(() => {
       console.log('faceLoaded')
       this.isFaceTrackModelLoaded = true
       this.runDetection()
