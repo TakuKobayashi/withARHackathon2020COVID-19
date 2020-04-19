@@ -21,7 +21,7 @@ class IndexPage extends React.Component {
   constructor(props: any) {
     super(props);
     console.log(faceapi.nets);
-    faceapi.nets.ssdMobilenetv1.loadFromUri('https://justadudewhohacks.github.io/face-api.js/models').then(() => {
+    faceapi.nets.tinyFaceDetector.loadFromUri('https://justadudewhohacks.github.io/face-api.js/models').then(() => {
       console.log("faceLoaded");
       this.isFaceTrackModelLoaded = true;
       this.runDetection();
@@ -74,7 +74,7 @@ class IndexPage extends React.Component {
       });
     }
     if(this.isFaceTrackModelLoaded){
-      faceapi.detectSingleFace(this.cameraVideo).then(faces => {
+      faceapi.detectSingleFace(this.cameraVideo, new faceapi.TinyFaceDetectorOptions()).then(faces => {
         console.log("faces: ", faces);
         window.requestAnimationFrame(this.runDetection);
       });
