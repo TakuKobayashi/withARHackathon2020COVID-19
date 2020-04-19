@@ -8,7 +8,11 @@ import Page from '../components/Page'
 import Container from '../components/Container'
 import IndexLayout from '../layouts'
 
-class IndexPage extends React.Component {
+interface CameraProps {
+  isVideo: boolean
+}
+
+class IndexPage extends React.Component<CameraProps> {
   private handTrackModel: handTrack.ObjectDetection | undefined = undefined
 
   private isFaceTrackModelLoaded = false
@@ -17,7 +21,7 @@ class IndexPage extends React.Component {
 
   private canvas: HTMLCanvasElement | null = null
 
-  private context: CanvasRenderingContext2D | null = null
+  private canvasContext: CanvasRenderingContext2D | null = null
 
   private isStartTracking: boolean = false
 
@@ -31,7 +35,9 @@ class IndexPage extends React.Component {
 
   constructor(props: any) {
     super(props)
-    console.log(faceapi.nets)
+    this.state = {
+      isVideo: false
+    }
     faceapi.nets.tinyFaceDetector.loadFromUri('https://justadudewhohacks.github.io/face-api.js/models').then(() => {
       console.log('faceLoaded')
       this.isFaceTrackModelLoaded = true
@@ -53,7 +59,7 @@ class IndexPage extends React.Component {
       return
     }
     this.canvas = canvasRef
-    this.context = canvasRef.getContext('2d')
+    this.canvasContext = canvasRef.getContext('2d')
   }
 
   onVideoRef(videoRef: HTMLVideoElement) {
@@ -69,6 +75,9 @@ class IndexPage extends React.Component {
     if (!this.cameraVideo) {
       return
     }
+    if (!this.canvasContext || !this.canvas){
+      return
+    }
     if (this.handTrackModel && !this.isHandTracking) {
       this.isHandTracking = true
       this.handTrackModel.detect(this.cameraVideo).then(predictions => {
@@ -76,7 +85,7 @@ class IndexPage extends React.Component {
         this.isHandTracking = false
         this.lastDetectedHands = predictions
         console.log('Predictions: ', predictions)
-        // this.handTrackModel.renderPredictions(predictions, this.canvas, this.context, this.cameraVideo);
+        // this.handTrackModel.renderPredictions(predictions, this.canvas, this.canvasContext, this.cameraVideo);
       })
     }
     if (this.isFaceTrackModelLoaded && !this.isFaceDetecting) {
@@ -87,6 +96,12 @@ class IndexPage extends React.Component {
         console.log('faces: ', faces)
       })
     }
+    if (!this.state.isVideo) {
+      this.setState({
+        isVideo: true
+      })
+    }
+    this.canvasContext.drawImage(this.cameraVideo, 0, 0, this.canvas.width, this.canvas.height)
     window.requestAnimationFrame(this.runDetection)
   }
 
@@ -104,8 +119,12 @@ class IndexPage extends React.Component {
       <IndexLayout>
         <Page>
           <Container>
-            <video ref={this.onVideoRef} />
-            <canvas ref={this.onCanvasLoaded} />
+            <div>
+              <video ref={this.onVideoRef} hidden={this.state.isVideo} />
+            </div>
+            <div>
+              <canvas ref={this.onCanvasLoaded} />
+            </div>
           </Container>
         </Page>
       </IndexLayout>
