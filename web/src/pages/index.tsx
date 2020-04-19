@@ -25,6 +25,10 @@ class IndexPage extends React.Component {
 
   private isHandTracking: boolean = false
 
+  private lastDetectedFace: faceapi.FaceDetection | undefined = undefined
+
+  private lastDetectedHands: any[] = []
+
   constructor(props: any) {
     super(props)
     console.log(faceapi.nets)
@@ -70,6 +74,7 @@ class IndexPage extends React.Component {
       this.handTrackModel.detect(this.cameraVideo).then(predictions => {
         this.isStartTracking = true
         this.isHandTracking = false
+        this.lastDetectedHands = predictions
         console.log('Predictions: ', predictions)
         // this.handTrackModel.renderPredictions(predictions, this.canvas, this.context, this.cameraVideo);
       })
@@ -78,6 +83,7 @@ class IndexPage extends React.Component {
       this.isFaceDetecting = true
       faceapi.detectSingleFace(this.cameraVideo, new faceapi.TinyFaceDetectorOptions()).then(faces => {
         this.isFaceDetecting = false
+        this.lastDetectedFace = faces
         console.log('faces: ', faces)
       })
     }
