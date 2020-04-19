@@ -49,7 +49,6 @@ class IndexPage extends React.Component<CameraProps> {
       isVideo: false,
       isShowMessage: false
     }
-    faceapi.env.monkeyPatch({ fetch: fetch })
     faceapi.loadTinyFaceDetectorModel('https://justadudewhohacks.github.io/face-api.js/models/').then(() => {
       console.log('faceLoaded')
       this.isFaceTrackModelLoaded = true
@@ -195,9 +194,9 @@ class IndexPage extends React.Component<CameraProps> {
         <Page>
           <Container>
             <div>
-              <video ref={this.onVideoRef} hidden={this.state.isVideo} style={videoStyle} />
+              <video ref={this.onVideoRef} hidden={this.state.isVideo} />
             </div>
-            <p style={{color: "#FF0000"}}>{!this.state.isShowMessage ? '顔触ってるよ!!' : null}</p>
+            <p style={{color: "#FF0000"}}>{this.state.isShowMessage ? '顔触ってるよ!!' : null}</p>
             <div>
               <canvas width={640} height={480} ref={this.onCanvasLoaded} />
             </div>
