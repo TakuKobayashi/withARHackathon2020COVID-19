@@ -13,6 +13,8 @@ class IndexPage extends React.Component {
   private webcam: Webcam;
   private handTrackModel: handTrack.ObjectDetection | null = null;
   private cameraVideo: HTMLVideoElement | null;
+  private canvas: HTMLCanvasElement;
+  private context: any;
   private isStartTracking = false;
 
   constructor(props: any) {
@@ -32,10 +34,13 @@ class IndexPage extends React.Component {
   }
   
 
-  onCanvasLoaded = (canvas: HTMLCanvasElement) => {
-    if (!canvas) {
+  onCanvasLoaded = (canvasRef: HTMLCanvasElement) => {
+    console.log(canvasRef);
+    if (!canvasRef) {
       return;
     }
+    this.canvas = canvasRef;
+    this.context = canvasRef.getContext("2d");
   }
 
   onWebcamRef = (webcamRef: Webcam) => {
@@ -43,7 +48,6 @@ class IndexPage extends React.Component {
   }
 
   onVideoRef = (videoRef) => {
-    console.log(videoRef);
     handTrack.startVideo(videoRef).then((isSuccess: boolean) => {
       this.cameraVideo = videoRef;
       if(isSuccess){
@@ -59,11 +63,8 @@ class IndexPage extends React.Component {
     this.handTrackModel.detect(this.cameraVideo).then(predictions => {
       this.isStartTracking = true;
         console.log("Predictions: ", predictions);
+        this.handTrackModel.renderPredictions(predictions, this.canvas, this.context, this.cameraVideo);
         window.requestAnimationFrame(this.runDetection);
-        //model.renderPredictions(predictions, canvas, context, video);
-        //if (isVideo) {
-            //requestAnimationFrame(runDetection);
-        //}
     });
   }
 
