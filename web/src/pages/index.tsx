@@ -4,7 +4,7 @@ import { Link } from 'gatsby'
 import * as handTrack from 'handtrackjs'
 import * as faceapi from 'face-api.js'
 
-import fetch from 'node-fetch';
+import fetch from 'node-fetch'
 global.fetch = fetch
 
 import Page from '../components/Page'
@@ -43,7 +43,7 @@ class IndexPage extends React.Component<CameraProps> {
       isVideo: false,
       isShowMessage: false
     }
-    faceapi.env.monkeyPatch({ fetch: fetch });
+    faceapi.env.monkeyPatch({ fetch: fetch })
     faceapi.nets.tinyFaceDetector.loadFromUri('https://justadudewhohacks.github.io/face-api.js/models').then(() => {
       console.log('faceLoaded')
       this.isFaceTrackModelLoaded = true
@@ -81,7 +81,7 @@ class IndexPage extends React.Component<CameraProps> {
     if (!this.cameraVideo) {
       return
     }
-    if (!this.canvasContext || !this.canvas){
+    if (!this.canvasContext || !this.canvas) {
       return
     }
     if (this.handTrackModel && !this.isHandTracking) {
@@ -113,7 +113,7 @@ class IndexPage extends React.Component<CameraProps> {
     const isFaceTouch = this.checkFaceTouch()
     console.log(isFaceTouch)
     if (this.state.isShowMessage !== isFaceTouch) {
-      this.setState({isShowMessage: isFaceTouch});
+      this.setState({ isShowMessage: isFaceTouch })
     }
     window.requestAnimationFrame(this.runDetection)
   }
@@ -161,7 +161,7 @@ class IndexPage extends React.Component<CameraProps> {
         checkInclude1,
         checkInclude2,
         checkInclude3,
-        checkInclude4,
+        checkInclude4
       })
 
       // どれかの手が顔に当たっている判定
@@ -189,9 +189,7 @@ class IndexPage extends React.Component<CameraProps> {
             <div>
               <video ref={this.onVideoRef} hidden={this.state.isVideo} />
             </div>
-            <div>
-              { this.state.isShowMessage ? "顔触ってるよ!!" : null }
-            </div>
+            <div>{this.state.isShowMessage ? '顔触ってるよ!!' : null}</div>
             <div>
               <canvas ref={this.onCanvasLoaded} />
             </div>
