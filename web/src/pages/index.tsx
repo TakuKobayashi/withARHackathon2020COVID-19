@@ -196,7 +196,7 @@ class IndexPage extends React.Component<CameraProps> {
             <div>
               <video ref={this.onVideoRef} hidden={this.state.isVideo} />
             </div>
-            <p style={{color: "#FF0000"}}>{this.state.isShowMessage ? '顔触ってるよ!!' : null}</p>
+            <p style={{color: "#FF0000", fontSize: 30}}>{this.state.isShowMessage ? '顔触ってるよ!!' : null}</p>
             <div>
               <canvas width={640} height={480} ref={this.onCanvasLoaded} />
             </div>
