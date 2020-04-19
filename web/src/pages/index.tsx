@@ -11,6 +11,12 @@ import Page from '../components/Page'
 import Container from '../components/Container'
 import IndexLayout from '../layouts'
 
+const videoStyle = {
+  position: "absolute",
+  top: 0,
+  left: 0
+}
+
 interface CameraProps {
   isVideo: boolean
   isShowMessage: boolean
@@ -43,8 +49,7 @@ class IndexPage extends React.Component<CameraProps> {
       isVideo: false,
       isShowMessage: false
     }
-    faceapi.env.monkeyPatch({ fetch: fetch })
-    faceapi.nets.tinyFaceDetector.loadFromUri('https://justadudewhohacks.github.io/face-api.js/models').then(() => {
+    faceapi.loadTinyFaceDetectorModel('https://justadudewhohacks.github.io/face-api.js/models').then(() => {
       console.log('faceLoaded')
       this.isFaceTrackModelLoaded = true
       this.runDetection()
@@ -81,9 +86,11 @@ class IndexPage extends React.Component<CameraProps> {
     if (!this.cameraVideo) {
       return
     }
+    /*
     if (!this.canvasContext || !this.canvas) {
       return
     }
+    */
     if (this.handTrackModel && !this.isHandTracking) {
       this.isHandTracking = true
       this.handTrackModel.detect(this.cameraVideo).then(predictions => {
@@ -187,11 +194,11 @@ class IndexPage extends React.Component<CameraProps> {
         <Page>
           <Container>
             <div>
-              <video ref={this.onVideoRef} hidden={this.state.isVideo} />
+              <video ref={this.onVideoRef} hidden={this.state.isVideo} style={videoStyle} />
             </div>
-            <div>{this.state.isShowMessage ? '顔触ってるよ!!' : null}</div>
+            <p style={{color: "#FF0000"}}>{!this.state.isShowMessage ? '顔触ってるよ!!' : null}</p>
             <div>
-              <canvas ref={this.onCanvasLoaded} />
+              <canvas width={640} height={480} ref={this.onCanvasLoaded} />
             </div>
           </Container>
         </Page>
