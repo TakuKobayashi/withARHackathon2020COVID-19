@@ -98,12 +98,14 @@ class IndexPage extends React.Component<CameraProps> {
         console.log('faces: ', faces)
       })
     }
+    /*
     if (!this.state.isVideo) {
       this.setState({
         isVideo: true
       })
     }
     this.canvasContext.drawImage(this.cameraVideo, 0, 0, this.canvas.width, this.canvas.height)
+     */
     window.requestAnimationFrame(this.runDetection)
   }
 
@@ -125,10 +127,10 @@ class IndexPage extends React.Component<CameraProps> {
               <video ref={this.onVideoRef} hidden={this.state.isVideo} />
             </div>
             <div>
-              <canvas ref={this.onCanvasLoaded} />
+              { this.state.isShowMessage ? "顔触ってるよ!!" : null }
             </div>
             <div>
-              { !this.state.isShowMessage ? "顔触ってるよ!!" : null }
+              <canvas ref={this.onCanvasLoaded} />
             </div>
           </Container>
         </Page>
