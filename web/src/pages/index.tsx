@@ -10,6 +10,7 @@ import IndexLayout from '../layouts'
 
 interface CameraProps {
   isVideo: boolean
+  isShowMessage: boolean
 }
 
 class IndexPage extends React.Component<CameraProps> {
@@ -36,7 +37,8 @@ class IndexPage extends React.Component<CameraProps> {
   constructor(props: any) {
     super(props)
     this.state = {
-      isVideo: false
+      isVideo: false,
+      isShowMessage: false
     }
     faceapi.nets.tinyFaceDetector.loadFromUri('https://justadudewhohacks.github.io/face-api.js/models').then(() => {
       console.log('faceLoaded')
@@ -124,6 +126,9 @@ class IndexPage extends React.Component<CameraProps> {
             </div>
             <div>
               <canvas ref={this.onCanvasLoaded} />
+            </div>
+            <div>
+              { !this.state.isShowMessage ? "顔触ってるよ!!" : null }
             </div>
           </Container>
         </Page>
