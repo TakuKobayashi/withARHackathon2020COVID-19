@@ -4,6 +4,9 @@ import { Link } from 'gatsby'
 import * as handTrack from 'handtrackjs'
 import * as faceapi from 'face-api.js'
 
+import fetch from 'node-fetch';
+global.fetch = fetch
+
 import Page from '../components/Page'
 import Container from '../components/Container'
 import IndexLayout from '../layouts'
@@ -40,6 +43,7 @@ class IndexPage extends React.Component<CameraProps> {
       isVideo: false,
       isShowMessage: false
     }
+    faceapi.env.monkeyPatch({ fetch: fetch });
     faceapi.nets.tinyFaceDetector.loadFromUri('https://justadudewhohacks.github.io/face-api.js/models').then(() => {
       console.log('faceLoaded')
       this.isFaceTrackModelLoaded = true
@@ -106,7 +110,66 @@ class IndexPage extends React.Component<CameraProps> {
     }
     this.canvasContext.drawImage(this.cameraVideo, 0, 0, this.canvas.width, this.canvas.height)
      */
+    const isFaceTouch = this.checkFaceTouch()
+    console.log(isFaceTouch)
+    if (this.state.isShowMessage !== isFaceTouch) {
+      this.setState({isShowMessage: isFaceTouch});
+    }
     window.requestAnimationFrame(this.runDetection)
+  }
+
+  private checkFaceTouch(): boolean {
+    if (!this.lastDetectedFace) {
+      return false
+    }
+    if (!this.lastDetectedHands.length > 0) {
+      return false
+    }
+
+    const faceBox = this.lastDetectedFace.box
+    const hands = this.lastDetectedHands
+    for (const hand of hands) {
+      // 顔の左上が手の中
+      const checkInclude1 =
+        hand.bbox[0] < faceBox.x &&
+        faceBox.x < hand.bbox[0] + hand.bbox[2] &&
+        hand.bbox[1] < faceBox.y &&
+        faceBox.y < hand.bbox[1] + hand.bbox[3]
+
+      // 顔の右上が手の中
+      const checkInclude2 =
+        hand.bbox[0] < faceBox.x + faceBox.width &&
+        faceBox.x + faceBox.width < hand.bbox[0] + hand.bbox[2] &&
+        hand.bbox[1] < faceBox.y &&
+        faceBox.y < hand.bbox[1] + hand.bbox[3]
+
+      // 顔の右上が手の中
+      const checkInclude3 =
+        hand.bbox[0] < faceBox.x &&
+        faceBox.x < hand.bbox[0] + hand.bbox[2] &&
+        hand.bbox[1] < faceBox.y + faceBox.height &&
+        faceBox.y + faceBox.height < hand.bbox[1] + hand.bbox[3]
+
+      // 顔の右上が手の中
+      const checkInclude4 =
+        hand.bbox[0] < faceBox.x + faceBox.width &&
+        faceBox.x + faceBox.width < hand.bbox[0] + hand.bbox[2] &&
+        hand.bbox[1] < faceBox.y + faceBox.height &&
+        faceBox.y + faceBox.height < hand.bbox[1] + hand.bbox[3]
+
+      console.log({
+        checkInclude1,
+        checkInclude2,
+        checkInclude3,
+        checkInclude4,
+      })
+
+      // どれかの手が顔に当たっている判定
+      if (checkInclude1 || checkInclude2 || checkInclude3 || checkInclude4) {
+        return true
+      }
+    }
+    return true
   }
 
   render():
