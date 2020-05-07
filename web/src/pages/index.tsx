@@ -1,11 +1,10 @@
 import * as React from 'react'
 import { Link } from 'gatsby'
 
-import * as handTrack from 'handtrackjs'
-import * as faceapi from 'face-api.js'
+const JEEFACEFILTERAPI = require('facefilter')
+console.log(JEEFACEFILTERAPI);
 
-import fetch from 'node-fetch'
-global.fetch = fetch
+import * as handTrack from 'handtrackjs'
 
 import Page from '../components/Page'
 import Container from '../components/Container'
@@ -31,7 +30,7 @@ class IndexPage extends React.Component<CameraProps> {
 
   private canvas: HTMLCanvasElement | null = null
 
-  private canvasContext: CanvasRenderingContext2D | null = null
+  //private canvasContext: CanvasRenderingContext2D | null = null
 
   private isStartTracking: boolean = false
 
@@ -39,7 +38,7 @@ class IndexPage extends React.Component<CameraProps> {
 
   private isHandTracking: boolean = false
 
-  private lastDetectedFace: faceapi.FaceDetection | undefined = undefined
+  //private lastDetectedFace: faceapi.FaceDetection | undefined = undefined
 
   private lastDetectedHands: any[] = []
 
@@ -49,11 +48,13 @@ class IndexPage extends React.Component<CameraProps> {
       isVideo: false,
       isShowMessage: false
     }
+    /*
     faceapi.loadTinyFaceDetectorModel('https://justadudewhohacks.github.io/face-api.js/models/').then(() => {
       console.log('faceLoaded')
       this.isFaceTrackModelLoaded = true
       this.runDetection()
     })
+    */
     handTrack.load().then(handModel => {
       console.log(handModel)
       this.handTrackModel = handModel
@@ -65,12 +66,30 @@ class IndexPage extends React.Component<CameraProps> {
   }
 
   onCanvasLoaded(canvasRef: HTMLCanvasElement) {
-    console.log(canvasRef)
     if (!canvasRef) {
       return
     }
+    JEEFACEFILTERAPI.init({
+      canvasId: canvasRef.id,
+      NNCpath: 'https://raw.githubusercontent.com/jeeliz/jeelizFaceFilter/master/dist/NNC.json', // root of NNC.json file
+      callbackReady: function(errCode, spec){
+        console.log('-----------------------------------');
+        console.log({errCode, spec});
+        if (errCode){
+          console.log('AN ERROR HAPPENS. SORRY BRO :( . ERR =', errCode);
+          return;
+        }
+        console.log('INFO: JEEFACEFILTERAPI IS READY');
+        //const CVD = JEEFACEFILTERAPI.Canvas2DDisplay(spec);
+        //console.log(CVD);
+      },
+      callbackTrack: function(detectState){
+        console.log('--------------------------------------------------');
+        console.log(detectState);
+      }
+    })
     this.canvas = canvasRef
-    this.canvasContext = canvasRef.getContext('2d')
+    //this.canvasContext = canvasRef.getContext('2d')
   }
 
   onVideoRef(videoRef: HTMLVideoElement) {
@@ -103,11 +122,13 @@ class IndexPage extends React.Component<CameraProps> {
     }
     if (this.isFaceTrackModelLoaded && !this.isFaceDetecting) {
       this.isFaceDetecting = true
+      /*
       faceapi.detectSingleFace(this.cameraVideo, new faceapi.TinyFaceDetectorOptions()).then(faces => {
         this.isFaceDetecting = false
         this.lastDetectedFace = faces
         console.log('faces: ', faces)
       })
+      */
     }
     /*
     if (!this.state.isVideo) {
@@ -198,7 +219,7 @@ class IndexPage extends React.Component<CameraProps> {
             </div>
             <p style={{color: "#FF0000", fontSize: 30}}>{this.state.isShowMessage ? '顔触ってるよ!!' : null}</p>
             <div>
-              <canvas width={640} height={480} ref={this.onCanvasLoaded} />
+              <canvas id="jeeFaceFilterCanvas" ref={this.onCanvasLoaded} />
             </div>
           </Container>
         </Page>
